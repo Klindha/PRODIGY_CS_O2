@@ -1,0 +1,61 @@
+from tkinter import *
+from tkinter import filedialog
+import os
+
+root = Tk()
+root.geometry("300x200")
+
+
+def process_image(mode):
+    # This is meant to select the file
+    file1 = filedialog.askopenfile(mode='r', filetypes=[('Image Files', '*.jpg;*.png;*.jpeg')])
+    if file1 is not None:
+        file_name = file1.name
+        
+        key = entry1.get(1.0, END).strip()  # To get the key from the input field and strip whitespace
+
+        if not key.isdigit():  # to Check if the key is a valid integer
+            print("Key must be a valid integer.")
+            return
+
+        key = int(key)  # in order to convert the key to an integer
+
+        try:
+            # Open the file in binary mode
+            with open(file_name, 'rb') as file:
+                image_data = bytearray(file.read())  # Read the file into a byte array
+
+            # Perform XOR operation for encryption or decryption
+            for i in range(len(image_data)):
+                image_data[i] ^= key
+
+            # Write the modified data back to the file
+            with open(file_name, 'wb') as file:
+                file.write(image_data)
+
+            print(f"Image {mode}ed successfully!")
+
+            if mode == "decrypt":
+                os.startfile(file_name)  # Open the file after decryption
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+def encrypt_image():
+    process_image("encrypt")  # Call the process_image function for encryption
+
+def decrypt_image():
+    process_image("decrypt")  # Call the process_image function for decryption
+
+# GUI Components
+b1 = Button(root, text="Encrypt", command=encrypt_image)
+b1.place(x=110, y=10)
+
+b2 = Button(root, text="Decrypt", command=decrypt_image)
+b2.place(x=110, y=50)
+
+entry1 = Text(root, height=1, width=20)
+entry1.place(x=70, y=100)
+
+
+root.mainloop()
